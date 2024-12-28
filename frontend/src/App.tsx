@@ -5,7 +5,7 @@ function App() {
   const [nodes, setNodes] = useState<string[]>([]);
   const [edges, setEdges] = useState<
     { from: string; to: string; weight: number }[]
-  >([]); // For user-entered edges
+  >([]);
   const [source, setSource] = useState<string>("");
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
@@ -25,7 +25,6 @@ function App() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Convert edges to the required format
     const sommets = edges.reduce((acc, edge) => {
       acc[`${edge.from},${edge.to}`] = edge.weight;
       return acc;
@@ -34,9 +33,8 @@ function App() {
     try {
       setError(null);
       const response = await api.post("/ford-bellman/", {
-        noeuds: nodes, // Send nodes array
-        sommets: sommets, // Send processed edges as sommets
-        la_source: source,
+        noeuds: nodes,
+        sommets: sommets,
       });
       setResult(response.data);
     } catch (err: any) {
