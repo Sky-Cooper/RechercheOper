@@ -2,13 +2,13 @@ import React, { useState } from "react";
 import { api } from "./api";
 
 function App() {
-  const [nodes, setNodes] = useState<string[]>([]); // For user-entered nodes
+  const [nodes, setNodes] = useState<string[]>([]);
   const [edges, setEdges] = useState<
     { from: string; to: string; weight: number }[]
   >([]); // For user-entered edges
-  const [source, setSource] = useState<string>(""); // For user-entered source node
-  const [result, setResult] = useState<any>(null); // To store the algorithm result
-  const [error, setError] = useState<string | null>(null); // To store errors
+  const [source, setSource] = useState<string>("");
+  const [result, setResult] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const handleAddNode = (node: string) => {
     if (node && !nodes.includes(node)) {
