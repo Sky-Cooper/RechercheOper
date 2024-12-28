@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from .serializers import GraphInputSerializer, GraphOutputSerializer
 
-# Temporary in-memory storage for demonstration
+
 stored_results = {}
 
 
@@ -16,7 +16,6 @@ class FordBellmanAPIView(APIView):
             sommets = serializer.validated_data["sommets"]
             la_source = serializer.validated_data["la_source"]
 
-            # Ford-Bellman Algorithm
             path_lengths = {noeud: float("inf") for noeud in noeuds}
             path_lengths[la_source] = 0
             paths = {noeud: [] for noeud in noeuds}
@@ -35,7 +34,6 @@ class FordBellmanAPIView(APIView):
                         status=status.HTTP_400_BAD_REQUEST,
                     )
 
-            # Save results in memory (or you can use a database)
             result_key = f"{noeuds}-{sommets}-{la_source}"
             stored_results[result_key] = {"path_lengths": path_lengths, "paths": paths}
 
@@ -46,7 +44,7 @@ class FordBellmanAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def get(self, request):
-        # Optionally filter stored results based on query parameters
+
         result_key = request.query_params.get("key", None)
         if result_key:
             result = stored_results.get(result_key, None)
@@ -57,5 +55,4 @@ class FordBellmanAPIView(APIView):
                 )
             return Response(result, status=status.HTTP_200_OK)
 
-        # Return all stored results
         return Response(stored_results, status=status.HTTP_200_OK)
