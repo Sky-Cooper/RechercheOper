@@ -8,7 +8,6 @@ stored_results = {}
 
 
 class FordBellmanAPIView(APIView):
-
     def post(self, request):
         serializer = GraphInputSerializer(data=request.data)
         if serializer.is_valid():
@@ -22,12 +21,15 @@ class FordBellmanAPIView(APIView):
             paths[la_source] = [la_source]
 
             for _ in range(len(noeuds) - 1):
-                for (x, y), distance_x_to_y in sommets.items():
+                for edge, distance_x_to_y in sommets.items():
+
+                    x, y = edge.split(",")
                     if path_lengths[x] + distance_x_to_y < path_lengths[y]:
                         path_lengths[y] = path_lengths[x] + distance_x_to_y
                         paths[y] = paths[x] + [y]
 
-            for (x, y), distance_x_to_y in sommets.items():
+            for edge, distance_x_to_y in sommets.items():
+                x, y = edge.split(",")
                 if path_lengths[x] + distance_x_to_y < path_lengths[y]:
                     return Response(
                         {"error": "il y a un arc négatif qui cause un circuit"},
@@ -41,18 +43,5 @@ class FordBellmanAPIView(APIView):
                 {"path_lengths": path_lengths, "paths": paths}
             )
             return Response(output_serializer.data, status=status.HTTP_200_OK)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def get(self, request):
-
-        result_key = request.query_params.get("key", None)
-        if result_key:
-            result = stored_results.get(result_key, None)
-            if not result:
-                return Response(
-                    {"error": "Result not found for the given key"},
-                    status=status.HTTP_404_NOT_FOUND,
-                )
-            return Response(result, status=status.HTTP_200_OK)
-
-        return Response(stored_results, status=status.HTTP_200_OK)

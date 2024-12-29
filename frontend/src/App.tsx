@@ -35,6 +35,7 @@ function App() {
       const response = await api.post("/ford-bellman/", {
         noeuds: nodes,
         sommets: sommets,
+        la_source: source,
       });
       setResult(response.data);
     } catch (err: any) {
