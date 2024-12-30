@@ -2,10 +2,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import GraphInputSerializer
+import logging
 
-
-stored_results = {}
-
+logger = logging.getLogger(__name__)
 
 class FordBellmanAPIView(APIView):
     def post(self, request):
@@ -15,6 +14,10 @@ class FordBellmanAPIView(APIView):
             sommets = serializer.validated_data["sommets"]
             la_source = serializer.validated_data["la_source"]
 
+            logger.debug(f"Nodes: {noeuds}")
+            logger.debug(f"Edges: {sommets}")
+            logger.debug(f"Source: {la_source}")
+
             path_lengths = {noeud: float("inf") for noeud in noeuds}
             path_lengths[la_source] = 0
             paths = {noeud: [] for noeud in noeuds}
@@ -23,6 +26,7 @@ class FordBellmanAPIView(APIView):
             for _ in range(len(noeuds) - 1):
                 for edge, distance_x_to_y in sommets.items():
                     x, y = edge.split(",")
+                    logger.debug(f"Processing edge: {x} -> {y} with weight {distance_x_to_y}")
                     if (
                         path_lengths[x] != float("inf")
                         and path_lengths[x] + distance_x_to_y < path_lengths[y]
@@ -48,6 +52,9 @@ class FordBellmanAPIView(APIView):
                 },
                 "paths": paths,
             }
+
+            logger.debug(f"Path lengths: {response_data['path_lengths']}")
+            logger.debug(f"Paths: {response_data['paths']}")
 
             return Response(response_data, status=status.HTTP_200_OK)
 

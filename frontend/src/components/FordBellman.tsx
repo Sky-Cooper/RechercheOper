@@ -62,18 +62,21 @@ function FordBellman() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     const sommets = edges.reduce((acc, edge) => {
-      acc[`${edge.from},${edge.to}`] = edge.weight;
+      acc[`${edge.source},${edge.target}`] = parseInt(edge.label, 10);
       return acc;
     }, {} as Record<string, number>);
 
     try {
       setError(null);
+
       const response = await api.post("/ford-bellman/", {
-        noeuds: nodes.map((n) => n.id),
+        noeuds: nodes.map((node) => node.id),
         sommets: sommets,
         la_source: source,
       });
+
       setResult(response.data);
     } catch (err: any) {
       setError(err.response?.data?.error || "An error occurred.");
